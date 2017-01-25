@@ -1,0 +1,14 @@
+#board {
+  height: 900px;
+  width: 900px;
+  margin-left: 50px;
+}
+
+.row div {
+  height: 300px;
+  width: 300px;
+  border: 2px solid black;
+  font-size: 10em;
+  padding-left: 11%;
+  padding-top: 5%;
+}
