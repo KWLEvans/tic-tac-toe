@@ -25,10 +25,10 @@ _This is a tic-tac-toe game. Players can tic and tac. I'm not 100% what toe refe
 * The program will not allow users to overwrite values in filled squares.
   * **Example Input:**
   * **Example Output:**
-* The program will
+* The program will recognize x and y coordinates of a clicked square.
   * **Example Input:**
   * **Example Output:**
-* The program will
+* The program will find a square in the board object using its x and y coordinates.
   * **Example Input:**
   * **Example Output:**
 * The program will
