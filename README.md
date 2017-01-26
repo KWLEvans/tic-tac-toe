@@ -31,16 +31,12 @@ _This is a tic-tac-toe game. Players can tic and tac. I'm not 100% what toe refe
 * The program will find a square in the board object using its x and y coordinates.
   * **Example Input:**
   * **Example Output:**
-* The program will
+* The program will check to see which player has marked a given square.
   * **Example Input:**
   * **Example Output:**
-* The program will
+* The program will check the marked squares to see if a player has won.
   * **Example Input:**
   * **Example Output:**
-* The program will
-  * **Example Input:**
-  * **Example Output:**
-
 
 ## Known Bugs
 

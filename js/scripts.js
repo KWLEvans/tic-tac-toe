@@ -48,7 +48,7 @@ Board.prototype.build = function() {
   }
 }
 
-//Prototype used to find a square based on its X and Y indexes
+//Prototype used to find a square based on its X and Y indices
 Board.prototype.find = function(xIndex, yIndex) {
   var foundSquare;
   this.squares.forEach(function(square) {
@@ -59,8 +59,10 @@ Board.prototype.find = function(xIndex, yIndex) {
   return foundSquare;
 }
 
-//
+//Game object used to start and end game
 var Game = {
+
+  //Initializes all requisite objects and builds board
   start: function() {
     playerX = new Player("X");
     activePlayer = playerX;
@@ -68,22 +70,27 @@ var Game = {
     gameBoard = new Board();
     gameBoard.build();
   },
+
+  //Checks to see if a player has won and returns which player
   over: function() {
     var markedSquares = [];
     var winner;
 
+    //Builds an array of only marked squares
     for (i = 0; i < gameBoard.squares.length; i++) {
       if (gameBoard.squares[i].markedBy()) {
         markedSquares.push(gameBoard.squares[i]);
       }
     }
 
+    //Checks if a player has marked the center square and if they've met the requirements for winning on a diagonal
     if (centerSquarePlayer) {
       if ((gameBoard.find(1,1).markedBy() === centerSquarePlayer && gameBoard.find(3,3).markedBy() === centerSquarePlayer) || (gameBoard.find(1,3).markedBy() === centerSquarePlayer && gameBoard.find(3,1).markedBy() === centerSquarePlayer)) {
         winner = centerSquarePlayer;
       }
     }
 
+    //Loops through markedSquares array to see if three squares are marked in any row or column. If they are, it checks to see if they're all marked by the same player and returns that player as the winner.
     if (markedSquares.length >= 5) {
       for (i = 1; i <= 3; i++) {
         var markedXs = markedSquares.filter(function(square) {
@@ -101,10 +108,15 @@ var Game = {
         }
       }
     }
+    if (winner) {
+      $(".row div").unbind("click");
+    }
+    //displayWinner(winner);
     console.log(winner + " wins!");
   }
 }
 
+//Sets activePlayer as whichever player did not just mark a sqaure. (X is active by default)
 function changeActivePlayer() {
   if (activePlayer.mark === "X") {
     activePlayer = playerO;
@@ -124,6 +136,8 @@ $(function() {
 
   $(".row div").click(function() {
     $(this).unbind("click");
+
+    //Gets the corresponding indices for a clicked square
     var xIndex = 3 - $(this).nextAll().length;
     var yIndex = 3 - $(this).parent().nextAll().length;
     gameBoard.find(xIndex, yIndex).mark(activePlayer);
