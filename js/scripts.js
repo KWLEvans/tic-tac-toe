@@ -4,6 +4,7 @@
 var playerX;
 var playerO;
 var gameBoard;
+var numberOfMoves = 0;
 var activePlayer;
 var centerSquarePlayer;
 var computer = false;
@@ -23,14 +24,17 @@ function Square(xIndex, yIndex) {
 
 //Marks corresponding square on front end with the player's mark and sets the centerSquarePlayer variable if a player marks the center square
 Square.prototype.mark = function(player) {
+  numberOfMoves++;
   $("#board").children().eq(this.yIndex - 1).children().eq(this.xIndex - 1).text(player.mark);
   if (this.xIndex === 2 && this.yIndex === 2) {
     centerSquarePlayer = this.markedBy();
   }
   changeActivePlayer();
   Game.over();
-  if (computer && activePlayer === playerO) {
-    Computer[difficulty]();
+  if (numberOfMoves < 9) {
+    if (computer && activePlayer === playerO) {
+      Computer[difficulty]();
+    }
   }
 }
 
@@ -143,14 +147,117 @@ var Computer = {
   easy: function () {
     if (gameInProgress) {
       var choice = gameBoard.find(randomIndex(), randomIndex());
-      console.log(choice);
       if (choice.markedBy() === "") {
         choice.mark(activePlayer);
       } else {
-        computerMove();
+        this.easy();
       }
     }
   },
+  hard: function() {
+    var markedSquares = [];
+    var possibilities = [1, 2, 3];
+    function computerMark(xIndex, yIndex) {
+      if (gameBoard.find(xIndex, yIndex).markedBy() === "") {
+        gameBoard.find(xIndex, yIndex).mark(activePlayer);
+      }
+    }
+    for (i = 0; i < gameBoard.squares.length; i++) {
+      if (gameBoard.squares[i].markedBy()) {
+        markedSquares.push(gameBoard.squares[i]);
+      }
+    }
+
+    if (activePlayer === playerO) {
+      if (centerSquarePlayer === "O") {
+        diagonalPlay(markedSquares, computerMark);
+      }
+    }
+
+    if (activePlayer === playerO) {
+      for (i = 1; i <= 3; i++) {
+        var markedXs = markedSquares.filter(function(square) {
+          return square.xIndex === i;
+        });
+        var markedYs = markedSquares.filter(function(square) {
+          return square.yIndex === i;
+        });
+
+        if (markedXs.length === 2 && (markedXs[0].markedBy() === markedXs[1].markedBy())) {
+          if (markedXs[0].markedBy() === "O") {
+            for (j = 0; j < 3; j++) {
+              if (markedXs[0].yIndex !== possibilities[j] && markedXs[1].yIndex !== possibilities[j]) {
+                console.log("Offensive X (" + i + ", " + possibilities[j] + ")");
+                computerMark(i, possibilities[j]);
+              }
+            }
+          }
+        } else if (markedYs.length === 2 && (markedYs[0].markedBy() === markedYs[1].markedBy())) {
+          if (markedYs[0].markedBy() === "O") {
+            for (j = 0; j < 3; j++) {
+              if (markedYs[0].xIndex !== possibilities[j] && markedYs[1].xIndex !== possibilities[j]) {
+                console.log("offensive Y (" + i + ", " + possibilities[j] + ")");
+                computerMark(possibilities[j], i);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (activePlayer === playerO) {
+      if (centerSquarePlayer === "X") {
+        diagonalPlay(markedSquares, computerMark);
+      }
+    }
+
+    if (activePlayer === playerO) {
+      for (i = 1; i <= 3; i++) {
+        var markedXs = markedSquares.filter(function(square) {
+          return square.xIndex === i;
+        });
+        var markedYs = markedSquares.filter(function(square) {
+          return square.yIndex === i;
+        });
+
+        if (markedXs.length === 2 && (markedXs[0].markedBy() === markedXs[1].markedBy())) {
+          if (markedXs[0].markedBy() === "X") {
+            for (j = 0; j < 3; j++) {
+              if (markedXs[0].yIndex !== possibilities[j] && markedXs[1].yIndex !== possibilities[j]) {
+                console.log("Defensive X (" + i + ", " + possibilities[j] + ")");
+                computerMark(i, possibilities[j]);
+              }
+            }
+          }
+        } else if (markedYs.length === 2 && (markedYs[0].markedBy() === markedYs[1].markedBy())) {
+          if (markedYs[0].markedBy() === "X") {
+            for (j = 0; j < 3; j++) {
+              if (markedYs[0].xIndex !== possibilities[j] && markedYs[1].xIndex !== possibilities[j]) {
+                console.log("Defensive Y (" + i + ", " + possibilities[j] + ")");
+                computerMark(possibilities[j], i);
+              }
+            }
+          }
+        }
+      }
+    }
+    if (activePlayer === playerO) {
+      Computer.easy();
+    }
+  }
+}
+
+function diagonalPlay(markedSquares, computerMark) {
+  if (gameBoard.find(1,1).markedBy() === centerSquarePlayer) {
+    computerMark(3,3);
+  } else if (gameBoard.find(3,3).markedBy() === centerSquarePlayer) {
+    computerMark(1,1);
+  } else if (gameBoard.find(1,3).markedBy() === centerSquarePlayer) {
+    computerMark(3,1);
+  } else if (gameBoard.find(3,1).markedBy() === centerSquarePlayer) {
+    computerMark(1,3);
+  } else {
+  }
 }
 
 ///////////////////////////////
@@ -163,6 +270,11 @@ $(function() {
   $("#computerEasy").click(function() {
     computer = true;
     difficulty = "easy";
+  });
+
+  $("#computerHard").click(function() {
+    computer = true;
+    difficulty = "hard";
   });
 
   $(".row div").click(function() {
