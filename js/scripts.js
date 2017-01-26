@@ -5,31 +5,41 @@ var playerX;
 var playerO;
 var gameBoard;
 var activePlayer;
+var centerSquarePlayer;
 
+//Player object which contains "X" or "O" as their mark
 function Player(mark) {
   this.mark = mark;
 }
 
+//Square object with an X and Y index
 function Square(xIndex, yIndex) {
   this.xIndex = xIndex;
   this.yIndex = yIndex;
 }
 
+//Marks corresponding square on front end with the player's mark and sets the centerSquarePlayer variable if a player marks the center square
 Square.prototype.mark = function(player) {
   $("#board").children().eq(this.yIndex - 1).children().eq(this.xIndex - 1).text(player.mark);
+  if (this.xIndex === 2 && this.yIndex === 2) {
+    centerSquarePlayer = this.markedBy();
+  }
   changeActivePlayer();
-  // Game.over();
+  Game.over();
 }
 
+//Gives the mark on a given square
 Square.prototype.markedBy = function() {
   var mark = $("#board").children().eq(this.yIndex - 1).children().eq(this.xIndex - 1).text();
   return mark;
 }
 
+//Sets the Board object and gives it an empty array of squares
 function Board() {
   this.squares = [];
 }
 
+//Prototype used to build each board using squares
 Board.prototype.build = function() {
   for (i = 1; i <=3; i++) {
     for (j = 1; j <= 3; j++) {
@@ -38,6 +48,7 @@ Board.prototype.build = function() {
   }
 }
 
+//Prototype used to find a square based on its X and Y indexes
 Board.prototype.find = function(xIndex, yIndex) {
   var foundSquare;
   this.squares.forEach(function(square) {
@@ -48,6 +59,7 @@ Board.prototype.find = function(xIndex, yIndex) {
   return foundSquare;
 }
 
+//
 var Game = {
   start: function() {
     playerX = new Player("X");
@@ -56,38 +68,41 @@ var Game = {
     gameBoard = new Board();
     gameBoard.build();
   },
-  // over: function() {
-  //   var xX = ["X"];
-  //   var xY = ["X"];
-  //   var oX = ["O"];
-  //   var oY = ["O"];
-  //   var allArrays = [];
-  //   var winner;
-  //
-  //   for (i = 1; i < gameBoard.squares.length; i++) {
-  //     if (gameBoard.squares[i].markedBy() === "X") {
-  //       xX.push(gameBoard.squares[i].xIndex);
-  //     } else if (gameBoard.squares[i].markedBy() === "O") {
-  //       oX.push(gameBoard.squares[i].xIndex);
-  //     }
-  //     if (gameBoard.squares[i].markedBy() === "X") {
-  //       xY.push(gameBoard.squares[i].yIndex);
-  //     } else if (gameBoard.squares[i].markedBy() === "O") {
-  //       oY.push(gameBoard.squares[i].yIndex);
-  //     }
-  //   }
-  //
-  //   allArrays.push(xX, xY, oX, oY);
-  //
-  //   for (i = 0; i < allArrays.length; i++) {
-  //     if (allArrays[i].length === 4) {
-  //       console.log(allArrays);
-  //       console.log(allArrays[i]);
-  //       winner = allArrays[i][0];
-  //       alert("The winner is " + winner + "!");
-  //     }
-  //   }
-  // }
+  over: function() {
+    var markedSquares = [];
+    var winner;
+
+    for (i = 0; i < gameBoard.squares.length; i++) {
+      if (gameBoard.squares[i].markedBy()) {
+        markedSquares.push(gameBoard.squares[i]);
+      }
+    }
+
+    if (centerSquarePlayer) {
+      if ((gameBoard.find(1,1).markedBy() === centerSquarePlayer && gameBoard.find(3,3).markedBy() === centerSquarePlayer) || (gameBoard.find(1,3).markedBy() === centerSquarePlayer && gameBoard.find(3,1).markedBy() === centerSquarePlayer)) {
+        winner = centerSquarePlayer;
+      }
+    }
+
+    if (markedSquares.length >= 5) {
+      for (i = 1; i <= 3; i++) {
+        var markedXs = markedSquares.filter(function(square) {
+          return square.xIndex === i;
+        });
+        var markedYs = markedSquares.filter(function(square) {
+          return square.yIndex === i;
+        });
+        if (markedXs.length === 3 && markedXs[0].markedBy() === markedXs[1].markedBy() && markedXs[1].markedBy() === markedXs[2].markedBy()) {
+          winner = markedXs[0].markedBy();
+          break;
+        } else if (markedYs.length === 3 && markedYs[0].markedBy() === markedYs[1].markedBy() && markedYs[1].markedBy() === markedYs[2].markedBy()) {
+          winner = markedYs[0].markedBy();
+          break;
+        }
+      }
+    }
+    console.log(winner + " wins!");
+  }
 }
 
 function changeActivePlayer() {
