@@ -6,6 +6,9 @@ var playerO;
 var gameBoard;
 var activePlayer;
 var centerSquarePlayer;
+var computer = false;
+var difficulty = "";
+var gameInProgress = false;
 
 //Player object which contains "X" or "O" as their mark
 function Player(mark) {
@@ -26,6 +29,9 @@ Square.prototype.mark = function(player) {
   }
   changeActivePlayer();
   Game.over();
+  if (computer && activePlayer === playerO) {
+    Computer[difficulty]();
+  }
 }
 
 //Gives the mark on a given square
@@ -64,6 +70,7 @@ var Game = {
 
   //Initializes all requisite objects and builds board
   start: function() {
+    gameInProgress = true;
     playerX = new Player("X");
     activePlayer = playerX;
     playerO = new Player("O");
@@ -87,6 +94,7 @@ var Game = {
     if (centerSquarePlayer) {
       if ((gameBoard.find(1,1).markedBy() === centerSquarePlayer && gameBoard.find(3,3).markedBy() === centerSquarePlayer) || (gameBoard.find(1,3).markedBy() === centerSquarePlayer && gameBoard.find(3,1).markedBy() === centerSquarePlayer)) {
         winner = centerSquarePlayer;
+        gameInProgress = false;
       }
     }
 
@@ -101,9 +109,11 @@ var Game = {
         });
         if (markedXs.length === 3 && markedXs[0].markedBy() === markedXs[1].markedBy() && markedXs[1].markedBy() === markedXs[2].markedBy()) {
           winner = markedXs[0].markedBy();
+          gameInProgress = false;
           break;
         } else if (markedYs.length === 3 && markedYs[0].markedBy() === markedYs[1].markedBy() && markedYs[1].markedBy() === markedYs[2].markedBy()) {
           winner = markedYs[0].markedBy();
+          gameInProgress = false;
           break;
         }
       }
@@ -125,7 +135,23 @@ function changeActivePlayer() {
   }
 }
 
+function randomIndex() {
+  return Math.floor(Math.random() * 3) + 1;
+}
 
+var Computer = {
+  easy: function () {
+    if (gameInProgress) {
+      var choice = gameBoard.find(randomIndex(), randomIndex());
+      console.log(choice);
+      if (choice.markedBy() === "") {
+        choice.mark(activePlayer);
+      } else {
+        computerMove();
+      }
+    }
+  },
+}
 
 ///////////////////////////////
 //Front-End
@@ -133,6 +159,11 @@ function changeActivePlayer() {
 
 $(function() {
   Game.start();
+
+  $("#computerEasy").click(function() {
+    computer = true;
+    difficulty = "easy";
+  });
 
   $(".row div").click(function() {
     $(this).unbind("click");
