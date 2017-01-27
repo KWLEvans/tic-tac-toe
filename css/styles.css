@@ -1,7 +1,15 @@
+h1 {
+  padding-left: 43%;
+}
+
+h2 {
+  padding-left: 43%;
+}
+
 #board {
   height: 900px;
   width: 900px;
-  margin-left: 50px;
+  margin-left: 20%;
 }
 
 .row div {
@@ -11,4 +19,28 @@
   font-size: 10em;
   padding-left: 11%;
   padding-top: 5%;
+}
+
+#winner-banner {
+  position: fixed;
+  left: 0px;
+  top: 200px;
+  width: 100vw;
+  height: 400px;
+  background-color: tomato;
+  font-size: 10em;
+  text-align: center;
+  color: goldenrod;
+}
+
+#play-again {
+  font-size: .2em;
+  background-color: goldenrod;
+  color: tomato;
+  box-shadow: 5px 5px #D9391C;
+}
+
+#computer-buttons {
+  margin-top: 5%;
+  margin-left: 43%;
 }

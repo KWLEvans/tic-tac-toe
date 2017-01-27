@@ -32,8 +32,8 @@ Square.prototype.mark = function(player) {
   changeActivePlayer();
   Game.over();
   if (numberOfMoves < 9) {
-    if (computer && activePlayer === playerO) {
-      Computer[difficulty]();
+    if (computer && activePlayer === playerO && gameInProgress) {
+      var moveDelay = setTimeout(Computer[difficulty], 1000);
     }
   }
 }
@@ -124,9 +124,8 @@ var Game = {
     }
     if (winner) {
       $(".row div").unbind("click");
+      displayWinner(winner);
     }
-    //displayWinner(winner);
-    console.log(winner + " wins!");
   }
 }
 
@@ -137,6 +136,7 @@ function changeActivePlayer() {
   } else {
     activePlayer = playerX;
   }
+  $("#active-player").text(activePlayer.mark);
 }
 
 function randomIndex() {
@@ -239,6 +239,13 @@ function horizontalVerticalPlay(markedSquares, playerMark, computerMark) {
       }
     }
   }
+}
+
+function displayWinner(winner) {
+  $("#board").append("<div id='winner-banner'>" + winner + " wins!!!!<br><button id='play-again'>Play Again?</button></div>");
+  $("#play-again").click(function() {
+    location.reload();
+  });
 }
 
 ///////////////////////////////
